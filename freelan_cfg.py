@@ -52,7 +52,7 @@ class FreelanCFGfscp(object):
     def __init__(self):
 
         self.defaults = {   'hostname_resolution_protocol': 'ipv4',
-                            'listen_on': '0.0.0.0:12012',
+                            'listen_on': '0.0.0.0:12000',
                             'listen_on_device': None,
                             'hello_timeout': '3000',
                             'contact': None,
@@ -64,7 +64,7 @@ class FreelanCFGfscp(object):
                             'elliptic_curve_capability':  ['sect571k1', 'secp384r1']   }
 
         self.hostname_resolution_protocol='ipv4'
-        self.listen_on='0.0.0.0:12012'
+        self.listen_on='0.0.0.0:12000'
         self.listen_on_device=None
         self.hello_timeout='3000'
         self.contact=None
@@ -178,7 +178,7 @@ class FreelanCFG(object):
         self.server = FreelanCFGserver()
         self.client = FreelanCFGclient()
         self.fscp = FreelanCFGfscp()
-        self.tap = FreelanCFGtap()
+        self.tap_adapter = FreelanCFGtap()
         self.switch = FreelanCFGswitch()
         self.router = FreelanCFGrouter()
         self.security = FreelanCFGsecurity()
@@ -195,7 +195,7 @@ class FreelanCFG(object):
         self.print_section(self.fscp, defaults=defaults)
 
         print("[tap]")
-        self.print_section(self.tap, defaults=defaults)
+        self.print_section(self.tap_adapter, defaults=defaults)
 
         print("[switch]")
         self.print_section(self.switch, defaults=defaults)
@@ -213,15 +213,17 @@ class FreelanCFG(object):
         for k,default_v in section.defaults.iteritems():
             self_kv = getattr(section, k)
 
+            #print ("Key: " + str(k) + " || Value: " + str(self_kv))
+
             if self_kv is None:
                 if (not (self_kv is default_v) or defaults):
                     print(k+'=')
                 continue
 
-            if isinstance(self_kv, basestring) or isinstance(self_kv, bool):
+            if isinstance(self_kv, basestring) or isinstance(self_kv, bool) or self_kv is None:
                 self_kv = [self_kv]
 
-            if isinstance(default_v, basestring) or isinstance(default_v, bool):
+            if isinstance(default_v, basestring) or isinstance(default_v, bool) or default_v is None:
                 default_v = [default_v]
 
             for kv in self_kv:
