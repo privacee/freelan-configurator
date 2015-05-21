@@ -184,32 +184,49 @@ class FreelanCFG(object):
         self.security = FreelanCFGsecurity()
 
     def print(self, defaults=False):
+        cfg = self.build(defaults=defaults)
 
-        print("[server]")
-        self.print_section(self.server, defaults=defaults)
+        for cfg_line in cfg:
+            print(cfg_line)
 
-        print("[client]")
-        self.print_section(self.client, defaults=defaults)
+    def build(self, defaults=False):
+        cfg = []
 
-        print("[fscp]")
-        self.print_section(self.fscp, defaults=defaults)
+        cfg.append("[server]")
+        cfg_sec = self.build_section(self.server, defaults=defaults)
+        cfg.extend(cfg_sec)
 
-        print("[tap]")
-        self.print_section(self.tap_adapter, defaults=defaults)
+        cfg.append("[client]")
+        cfg_sec = self.build_section(self.client, defaults=defaults)
+        cfg.extend(cfg_sec)
 
-        print("[switch]")
-        self.print_section(self.switch, defaults=defaults)
+        cfg.append("[fscp]")
+        cfg_sec = self.build_section(self.fscp, defaults=defaults)
+        cfg.extend(cfg_sec)
 
-        print("[router]")
-        self.print_section(self.router, defaults=defaults)
+        cfg.append("[tap]")
+        cfg_sec = self.build_section(self.tap_adapter, defaults=defaults)
+        cfg.extend(cfg_sec)
+
+        cfg.append("[switch]")
+        cfg_sec = self.build_section(self.switch, defaults=defaults)
+        cfg.extend(cfg_sec)
+
+        cfg.append("[router]")
+        cfg_sec = self.build_section(self.router, defaults=defaults)
+        cfg.extend(cfg_sec)
 
         # NOT recommended to do this!
         #self.security.certificate_validation_method = None
 
-        print("[security]")
-        self.print_section(self.security, defaults=defaults)
+        cfg.append("[security]")
+        cfg_sec = self.build_section(self.security, defaults=defaults)
+        cfg.extend(cfg_sec)
 
-    def print_section(self, section, defaults=False):
+        return cfg
+
+    def build_section(self, section, defaults=False):
+        cfg = []
         for k,default_v in section.defaults.iteritems():
             self_kv = getattr(section, k)
 
@@ -217,7 +234,7 @@ class FreelanCFG(object):
 
             if self_kv is None:
                 if (not (self_kv is default_v) or defaults):
-                    print(k+'=')
+                    cfg.append(k+'=')
                 continue
 
             if isinstance(self_kv, basestring) or isinstance(self_kv, bool) or self_kv is None:
@@ -228,4 +245,6 @@ class FreelanCFG(object):
 
             for kv in self_kv:
                 if (not kv in default_v) or defaults:
-                    print(k+'='+str(kv))
+                    cfg.append(k+'='+str(kv))
+
+        return cfg
