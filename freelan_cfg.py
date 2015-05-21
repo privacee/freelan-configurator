@@ -189,6 +189,58 @@ class FreelanCFG(object):
         for cfg_line in cfg:
             print(cfg_line)
 
+    def validate(self):
+        """Validation of configuration to check for required values"""
+
+        if not self.server.enabled:
+
+            if self.security.signature_certificate_file is self.security.defaults['signature_certificate_file']:
+                print("If you are not configuring a server, you need to set 'signature_certificate_file'")
+
+            if self.security.signature_private_key_file is self.security.defaults['signature_private_key_file']:
+                print("If you are not configuring a server, you need to set 'signature_private_key_file'")
+
+        else:
+
+            if self.client.enabled:
+                print("Client and server enabled at the same time?")
+
+            if self.server.protocol is self.server.defaults['protocol']:
+                if self.server.server_certificate_file is self.server.defaults['server_certificate_file'] or \
+                                self.server.server_private_key_file is self.server.defaults['server_private_key_file']:
+                   print("'server_certificate_file' and/or 'server_private_key_file' are not configured and will be auto-generated.")
+
+
+            if self.server.certification_authority_certificate_file is self.server.defaults['certification_authority_certificate_file'] or \
+                            self.server.certification_authority_private_key_file is self.server.defaults['certification_authority_private_key_file']:
+                print("'certification_authority_certificate_file' and/or 'certification_authority_private_key_file' are not configured and will be auto-generated - this is NOT recommended.")
+
+            if self.server.authentication_script is self.server.defaults['authentication_script']:
+                print("No 'authentication_script' has been provided and all authentication requests will be rejected!")
+
+        if self.client.enabled:
+
+            if self.client.server_endpoint is self.client.defaults['server_endpoint']:
+                print("You are running in client mode, but you are using a default server address.")
+
+            if not self.client.disable_peer_verification is self.client.defaults['disable_peer_verification'] or \
+                    not self.client.disable_host_verification is self.client.defaults['disable_host_verification']:
+                print("Disabling peer/host verification is NOT recommended - AT ALL.")
+
+            if self.client.username is self.client.defaults['username'] or \
+                            self.client.password is self.client.defaults['password']:
+                print("No username and/or password has been configured for a client.")
+
+        ## hostname_resolution_protocol=ipv4/ipv6
+        ## ipv4_address_prefix_length=9.0.0.1/24
+        ## ipv6_address_prefix_length=2aa1::1/8
+
+        if self.security.authority_certificate_file is self.security.defaults['authority_certificate_file']:
+            print("You need to set 'authority_certificate_file'")
+
+        if self.tap_adapter.ipv4_address_prefix_length is self.tap_adapter.defaults['ipv4_address_prefix_length']:
+            print("You are using the default network address - make sure you set a different ip for every machine 'ipv4_address_prefix_length'")
+
     def build(self, defaults=False):
         cfg = []
 
@@ -245,6 +297,12 @@ class FreelanCFG(object):
 
             for kv in self_kv:
                 if (not kv in default_v) or defaults:
-                    cfg.append(k+'='+str(kv))
+                    if isinstance(kv, bool):
+                        if kv:
+                            cfg.append(k+'='+'yes')
+                        else:
+                            cfg.append(k+'='+'no')
+                    else:
+                        cfg.append(k+'='+str(kv))
 
         return cfg
