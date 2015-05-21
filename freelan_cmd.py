@@ -11,8 +11,6 @@ import datetime
 
 from freelan_cfg import FreelanCFG
 
-VERBOSE = False
-
 def load_config():
     '''try loading config file from a default directory'''
     cfg_path = '/usr/local/etc/freelan'
@@ -31,8 +29,6 @@ def load_config():
     return _load_config(cfg_file_path)
 
 def _load_config(cfg_file_path):
-    global VERBOSE
-
     if not os.path.isfile( cfg_file_path ):
         print("Can not find freelan config file at: " + cfg_file_path)
         return
@@ -48,8 +44,6 @@ def _load_config(cfg_file_path):
     fcfg_section = None
 
     for cfg_line in cfg_lines:
-        if VERBOSE:
-            print("Loading: " + cfg_line)
         if cfg_line.startswith('[') and cfg_line.endswith(']'):
             section_name = cfg_line[1:-1]
             fcfg_section = getattr(fcfg, section_name)
@@ -108,3 +102,41 @@ def write_config(cfg):
 
     with open(cfg_file_path, 'w') as cfg_f:
         cfg_f.writelines(cfg_lines)
+
+def generate_server_cfg():
+    fcfg = FreelanCFG()
+    return fcfg
+
+def generate_client_cfg():
+    fcfg = FreelanCFG()
+    return fcfg
+
+def generate_cfg():
+    fcfg = FreelanCFG()
+    return fcfg
+
+def main(argv):
+
+    fcfg = FreelanCFG()
+
+    if '-l' in argv:
+        fcfg = load_config()
+
+    if '-server' in argv:
+        fcfg = generate_server_cfg()
+
+    if '-client' in argv:
+        fcfg = generate_client_cfg()
+
+    if '-generate' in argv:
+        fcfg = generate_cfg()
+
+    if '-p' in argv:
+        fcfg.print()
+
+    if '-w' in argv:
+        write_config(fcfg)
+
+
+if __name__ == "__main__":
+    main(sys.argv[1:])
