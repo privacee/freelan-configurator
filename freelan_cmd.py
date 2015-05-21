@@ -100,36 +100,58 @@ def write_config(cfg):
         backup_file = cfg_file_path+'.ORG-'+datetime.datetime.fromtimestamp(ts).strftime('%y-%m-%d-%H-%M-%S')
         shutil.move(cfg_file_path, backup_file)
 
+    cfg_lines = [cfg_line+'\n' for cfg_line in cfg_lines]
+
     with open(cfg_file_path, 'w') as cfg_f:
         cfg_f.writelines(cfg_lines)
 
-def generate_server_cfg():
+def generate_server_cfg(pre_cfg=None):
     fcfg = FreelanCFG()
+
+    if not pre_cfg is None:
+        fcfg = pre_cfg
+
+    fcfg.server.enabled=True
+    fcfg.client.enabled=False
+
     return fcfg
 
-def generate_client_cfg():
+def generate_client_cfg(pre_cfg=None):
     fcfg = FreelanCFG()
+
+    if not pre_cfg is None:
+        fcfg = pre_cfg
+
+    fcfg.server.enabled=False
+    fcfg.client.enabled=True
+
     return fcfg
 
-def generate_cfg():
+def generate_cfg(pre_cfg=None):
     fcfg = FreelanCFG()
+
+    if not pre_cfg is None:
+        fcfg = pre_cfg
+
+    fcfg.server.enabled=False
+    fcfg.client.enabled=False
+
     return fcfg
 
 def main(argv):
-
     fcfg = FreelanCFG()
 
     if '-l' in argv:
         fcfg = load_config()
 
     if '-server' in argv:
-        fcfg = generate_server_cfg()
+        fcfg = generate_server_cfg(fcfg)
 
     if '-client' in argv:
-        fcfg = generate_client_cfg()
+        fcfg = generate_client_cfg(fcfg)
 
     if '-generate' in argv:
-        fcfg = generate_cfg()
+        fcfg = generate_cfg(fcfg)
 
     if '-p' in argv:
         fcfg.print()
