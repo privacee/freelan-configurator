@@ -1,8 +1,20 @@
 #!/usr/bin/env python
 
+from __future__ import print_function
+
 class FreelanCFGserver(object):
     """"""
     def __init__(self):
+
+        self.defaults = {   'enabled': False,
+                            'listen_on': '0.0.0.0:443',
+                            'protocol': 'https',
+                            'server_certificate_file': None,
+                            'server_private_key_file': None,
+                            'certification_authority_certificate_file': None,
+                            'certification_authority_private_key_file': None,
+                            'authentication_script': None   }
+
         self.enabled=False
         self.listen_on= '0.0.0.0:443'
         self.protocol='https'
@@ -16,6 +28,16 @@ class FreelanCFGserver(object):
 class FreelanCFGclient(object):
     """"""
     def __init__(self):
+
+        self.defaults = {   'enabled': False,
+                            'server_endpoint': '127.0.0.1:443',
+                            'protocol': 'https',
+                            'disable_peer_verification': False,
+                            'disable_host_verification': False,
+                            'username': None,
+                            'password': None,
+                            'public_endpoint': '0.0.0.0'   }
+
         self.enabled=False
         self.server_endpoint= '127.0.0.1:443'
         self.protocol='https'
@@ -28,6 +50,19 @@ class FreelanCFGclient(object):
 class FreelanCFGfscp(object):
     """"""
     def __init__(self):
+
+        self.defaults = {   'hostname_resolution_protocol': 'ipv4',
+                            'listen_on': '0.0.0.0:12012',
+                            'listen_on_device': None,
+                            'hello_timeout': '3000',
+                            'contact': None,
+                            'accept_contact_requests': True,
+                            'accept_contacts': True,
+                            'dynamic_contact_file': None,
+                            'never_contact': None,
+                            'cipher_capability':  ['ecdhe_rsa_aes256_gcm_sha384', 'ecdhe_rsa_aes128_gcm_sha256'],
+                            'elliptic_curve_capability':  ['sect571k1', 'secp384r1']   }
+
         self.hostname_resolution_protocol='ipv4'
         self.listen_on='0.0.0.0:12012'
         self.listen_on_device=None
@@ -37,12 +72,30 @@ class FreelanCFGfscp(object):
         self.accept_contacts=True
         self.dynamic_contact_file=None
         self.never_contact=None
-        self.cipher_capability = ['ecdhe_rsa_aes256_gcm_sha384', 'ecdhe_rsa_aes128_gcm_sha256']
-        self.elliptic_curve_capability = ['sect571k1', 'secp384r1']
+        self.cipher_capability=['ecdhe_rsa_aes256_gcm_sha384', 'ecdhe_rsa_aes128_gcm_sha256']
+        self.elliptic_curve_capability=['sect571k1', 'secp384r1']
 
 class FreelanCFGtap(object):
     """"""
     def __init__(self):
+
+        self.defaults = {   'type': 'tap',
+                            'enabled': True,
+                            'name': None,
+                            'mtu': 'auto',
+                            'mss_override': 'auto',
+                            'metric': 'auto',
+                            'ipv4_address_prefix_length': '9.0.0.1/24',
+                            'ipv6_address_prefix_length': '2aa1::1/8',
+                            'remote_ipv4_address': '9.0.0.0',
+                            'arp_proxy_enabled': False,
+                            'arp_proxy_fake_ethernet_address': '00:aa:bb:cc:dd:ee',
+                            'dhcp_proxy_enabled': True,
+                            'dhcp_server_ipv4_address_prefix_length': '9.0.0.0/24',
+                            'dhcp_server_ipv6_address_prefix_length': '2aa1::/8',
+                            'up_script': None,
+                            'down_script': None   }
+
         self.type='tap'
         self.enabled=True
         self.name=None
@@ -63,12 +116,26 @@ class FreelanCFGtap(object):
 class FreelanCFGswitch(object):
     """"""
     def __init__(self):
+        self.defaults = {   'routing_method': 'switch',
+                            'relay_mode_enabled': False   }
+
         self.routing_method='switch'
         self.relay_mode_enabled=False
 
 class FreelanCFGrouter(object):
     """"""
     def __init__(self):
+
+        self.defaults = {   'local_ip_route': None,
+                            'local_dns_server': None,
+                            'client_routing_enabled': True,
+                            'accept_routes_requests': True,
+                            'internal_route_acceptance_policy': 'unicast_in_network',
+                            'system_route_acceptance_policy': None,
+                            'maximum_routes_limit': '1',
+                            'dns_servers_acceptance_policy': 'in_network',
+                            'dns_script': None   }
+
         self.local_ip_route=None
         self.local_dns_server=None
         self.client_routing_enabled=True
@@ -82,6 +149,18 @@ class FreelanCFGrouter(object):
 class FreelanCFGsecurity(object):
     """"""
     def __init__(self):
+
+        self.defaults = {  'passphrase': None,
+                           'passphrase_salt': 'freelan',
+                           'passphrase_iterations_count': '2000',
+                           'signature_certificate_file': None,
+                           'signature_private_key_file': None,
+                           'certificate_validation_method': 'default',
+                           'certificate_validation_script': None,
+                           'authority_certificate_file': None,
+                           'certificate_revocation_validation_method': None,
+                           'certificate_revocation_list_file': None   }
+
         self.passphrase=None
         self.passphrase_salt='freelan'
         self.passphrase_iterations_count='2000'
@@ -103,3 +182,48 @@ class FreelanCFG(object):
         self.switch = FreelanCFGswitch()
         self.router = FreelanCFGrouter()
         self.security = FreelanCFGsecurity()
+
+    def print(self, defaults=False):
+
+        print("[server]")
+        self.print_section(self.server, defaults=defaults)
+
+        print("[client]")
+        self.print_section(self.client, defaults=defaults)
+
+        print("[fscp]")
+        self.print_section(self.fscp, defaults=defaults)
+
+        print("[tap]")
+        self.print_section(self.tap, defaults=defaults)
+
+        print("[switch]")
+        self.print_section(self.switch, defaults=defaults)
+
+        print("[router]")
+        self.print_section(self.router, defaults=defaults)
+
+        # NOT recommended to do this!
+        #self.security.certificate_validation_method = None
+
+        print("[security]")
+        self.print_section(self.security, defaults=defaults)
+
+    def print_section(self, section, defaults=False):
+        for k,default_v in section.defaults.iteritems():
+            self_kv = getattr(section, k)
+
+            if self_kv is None:
+                if (not (self_kv is default_v) or defaults):
+                    print(k+'=')
+                continue
+
+            if isinstance(self_kv, basestring) or isinstance(self_kv, bool):
+                self_kv = [self_kv]
+
+            if isinstance(default_v, basestring) or isinstance(default_v, bool):
+                default_v = [default_v]
+
+            for kv in self_kv:
+                if (not kv in default_v) or defaults:
+                    print(k+'='+str(kv))
