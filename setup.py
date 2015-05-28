@@ -9,7 +9,7 @@ setup(
     author='Christoph Russ',
     author_email='chruss@gmx.de',
     url='https://github.com/privacee/freelan-configurator',
-    download_url='',
+    download_url='https://github.com/privacee/freelan-configurator/tarball/v0.1',
     keywords = ['freelan', 'vpn', 'config', 'file'],
     zip_safe=False,
     packages=['freelan-configurator'],
