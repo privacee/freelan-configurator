@@ -12,7 +12,7 @@ setup(
     download_url='https://github.com/privacee/freelan-configurator/tarball/v0.1',
     keywords = ['freelan', 'vpn', 'config', 'file'],
     zip_safe=False,
-    packages=['freelan-configurator'],
+    packages=['freelan_configurator'],
     #scripts=['freelan_cmd.py'],
     #entry_points={'console_scripts': ['freelan_cfg = freelan_cfg:main']},
     install_requires=['appdirs'],
