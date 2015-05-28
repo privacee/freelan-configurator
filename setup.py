@@ -18,7 +18,7 @@ setup(
     install_requires=['appdirs'],
     classifiers=[
         'Environment :: Console',
-        'License :: MIT'
+        'License :: MIT',
         'Programming Language :: Python :: 2 :: 3',
         'Development Status :: 1 - Alpha'
     ]
